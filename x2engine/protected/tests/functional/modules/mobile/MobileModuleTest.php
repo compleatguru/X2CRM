@@ -75,11 +75,21 @@ class MobileModuleTest extends MobileModuleTestBase {
 //        $this->assertTrue (isset ($matches[1]), Yii::t('app', 'Failed to parse qunit output'));
 //        $failed = $matches[1];
 
-        // TODO: use a php html parser and pretty-print the test output
+        //use a php html parser and pretty-print the test output
         $this->storeEval (
             "window.$('#qunit-tests')[0].innerHTML",
             'testOutput');
         $testOutput = $this->getExpression ('${testOutput}');
+        $html = file_get_html($testOutput);
+        // Find all images 
+        $testOutput = '<h2>Images:</h2>' . '<br>';
+        foreach($html->find('img') as $element) 
+               $testOutput .= $element->src . '<br>';
+
+        $testOutput .= '<h2>Links:</h2>' . '<br>';
+        // Find all links 
+        foreach($html->find('a') as $element) 
+               $testOutput .= $element->href . '<br>';
 
         if ($total !== $passed) {
             TestingAuxLib::log ($testOutput);
